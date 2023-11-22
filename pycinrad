@@ -1,0 +1,21 @@
+import cinrad
+from datetime import timedelta as td  # 世界时+8=北京时
+
+f = cinrad.io.StandardData('/Users/zhoulei/Desktop/6.10-11/2023Z_RADR_I_Z9915_20230610150215_O_DOR_CB_CAP_FMT.bin.bz2')
+# 标准化数据
+f.available_product(0)
+print(f.available_product(0))  # 产品类型
+
+f.available_tilt('REF')
+f.scantime = f.scantime + td(hours=8)  # 世界时+8=北京时
+rl = list(f.iter_tilt(150, 'REF'))
+print(rl)  # 列表查看不同仰角数据
+
+tilt_number = 0
+data_radius = 150
+data_dtype = 'REF'
+REF = f.get_data(tilt_number, data_radius, data_dtype)
+
+cr = cinrad.calc.quick_cr(rl)  # 快速计算组合反射率
+fig = cinrad.visualize.PPI(cr, dpi=125, add_city_names=True, style='black')
+fig('/Users/zhoulei/Desktop/test save')
